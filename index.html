@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Mauvette | Lujo Silencioso</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#26170c", "on-primary": "#ffffff",
+          "primary-container": "#3d2b1f", "on-primary-container": "#ac9181",
+          "primary-fixed": "#fbddca", "primary-fixed-dim": "#dec1af",
+          "on-primary-fixed": "#28180d", "on-primary-fixed-variant": "#574335",
+          "inverse-primary": "#dec1af",
+          "secondary": "#775a19", "on-secondary": "#ffffff",
+          "secondary-container": "#fed488", "on-secondary-container": "#785a1a",
+          "secondary-fixed": "#ffdea5", "secondary-fixed-dim": "#e9c176",
+          "on-secondary-fixed": "#261900", "on-secondary-fixed-variant": "#5d4201",
+          "tertiary": "#211910", "on-tertiary": "#ffffff",
+          "tertiary-container": "#372d24", "on-tertiary-container": "#a39487",
+          "tertiary-fixed": "#f1dfd1", "tertiary-fixed-dim": "#d4c4b6",
+          "on-tertiary-fixed": "#231a11", "on-tertiary-fixed-variant": "#50453a",
+          "error": "#ba1a1a", "on-error": "#ffffff",
+          "error-container": "#ffdad6", "on-error-container": "#93000a",
+          "surface": "#fbf9f5", "surface-dim": "#dbdad6", "surface-bright": "#fbf9f5",
+          "surface-variant": "#e4e2de", "on-surface": "#1b1c1a", "on-surface-variant": "#4f453f",
+          "surface-container-lowest": "#ffffff", "surface-container-low": "#f5f3ef",
+          "surface-container": "#efeeea", "surface-container-high": "#eae8e4",
+          "surface-container-highest": "#e4e2de",
+          "inverse-surface": "#30312e", "inverse-on-surface": "#f2f0ed",
+          "outline": "#81756e", "outline-variant": "#d2c4bc",
+          "surface-tint": "#705a4c", "background": "#fbf9f5", "on-background": "#1b1c1a",
+        },
+        borderRadius: { "DEFAULT": "0.125rem", "sm": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "9999px" },
+        spacing: {
+          "section-gap": "120px", "gutter": "24px",
+          "margin-desktop": "64px", "container-max": "1280px", "margin-mobile": "20px", "unit": "8px"
+        },
+        fontFamily: {
+          "bodoni": ["Bodoni Moda", "serif"],
+          "sans": ["Montserrat", "sans-serif"],
+        },
+        fontSize: {
+          "display-lg": ["64px", { lineHeight: "1.1", letterSpacing: "-0.02em" }],
+          "display-md": ["40px", { lineHeight: "1.2" }],
+          "headline-lg": ["40px", { lineHeight: "1.2" }],
+          "headline-md": ["28px", { lineHeight: "1.3" }],
+          "body-lg": ["18px", { lineHeight: "1.6", letterSpacing: "0.01em" }],
+          "body-md": ["16px", { lineHeight: "1.6" }],
+          "label": ["12px", { lineHeight: "1.0", letterSpacing: "0.1em", fontWeight: "600" }],
+          "caption": ["11px", { lineHeight: "1.4" }],
+        }
+      }
+    }
+  }
+</script>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Montserrat', sans-serif; }
+  .font-bodoni { font-family: 'Bodoni Moda', serif; }
+
+  .glass-nav {
+    background: linear-gradient(to bottom, rgba(251,249,245,0.85) 0%, rgba(251,249,245,0) 100%);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  .scrolled-nav {
+    background-color: rgba(251,249,245,0.96) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    box-shadow: 0 4px 30px rgba(38,23,12,0.06);
+  }
+  .hover-gold {
+    position: relative;
+  }
+  .hover-gold::after {
+    content: '';
+    position: absolute;
+    bottom: -3px; left: 50%;
+    width: 0; height: 1px;
+    background-color: #775a19;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+  }
+  .hover-gold:hover::after { width: 100%; }
+
+  .ambient-glow { box-shadow: 0 0 30px rgba(38,23,12,0.07); }
+
+  .fade-up {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  }
+  .fade-up.visible { opacity: 1; transform: none; }
+
+  .thin-divider { border-bottom: 1px solid rgba(210,180,140,0.45); }
+
+  /* Cart drawer */
+  #cart-drawer {
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+  #cart-drawer.open { transform: translateX(0); }
+  #cart-overlay { opacity: 0; pointer-events: none; transition: opacity 0.4s; }
+  #cart-overlay.open { opacity: 1; pointer-events: all; }
+
+  /* Product modal */
+  #product-modal {
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  #product-modal.open { opacity: 1; pointer-events: all; }
+  #product-modal .modal-inner {
+    transform: translateY(20px);
+    transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+  #product-modal.open .modal-inner { transform: translateY(0); }
+
+  /* Mobile menu */
+  #mobile-menu {
+    transform: translateX(-100%);
+    transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+  #mobile-menu.open { transform: translateX(0); }
+
+  /* Color swatches */
+  .swatch { transition: all 0.2s; }
+  .swatch.active { box-shadow: 0 0 0 2px #fbf9f5, 0 0 0 4px #775a19; }
+
+  /* Notification toast */
+  #toast {
+    transform: translateY(100px);
+    opacity: 0;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+  }
+  #toast.show { transform: translateY(0); opacity: 1; }
+
+  input[type="email"]:focus { outline: none; border-color: #26170c; }
+
+  .product-card { cursor: pointer; }
+  .product-card:hover .product-img { transform: scale(1.05); }
+  .product-img { transition: transform 0.7s ease; }
+
+  /* Scroll snap for craftsmanship on mobile */
+  @media (max-width: 768px) {
+    .craft-scroll { scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+    .craft-item { scroll-snap-align: start; flex: 0 0 80vw; }
+  }
+</style>
+</head>
+<body class="bg-background text-on-background antialiased selection:bg-secondary-container selection:text-on-secondary-container">
+
+<!-- ═══════════════════════════ CART OVERLAY ═══════════════════════════ -->
+<div id="cart-overlay" class="fixed inset-0 bg-primary/30 z-40" onclick="closeCart()"></div>
+
+<!-- ═══════════════════════════ CART DRAWER ═══════════════════════════ -->
+<aside id="cart-drawer" class="fixed top-0 right-0 h-full w-full max-w-sm bg-surface-container-lowest z-50 flex flex-col ambient-glow">
+  <div class="flex items-center justify-between px-8 py-6 border-b border-outline-variant/50">
+    <span class="font-bodoni text-headline-md text-primary">Carrito</span>
+    <button onclick="closeCart()" class="text-on-surface-variant hover:text-primary transition-colors">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+  </div>
+  <div id="cart-items" class="flex-1 overflow-y-auto px-8 py-6 space-y-6">
+    <p id="cart-empty" class="font-sans text-body-md text-on-surface-variant text-center mt-12">Tu carrito está vacío.</p>
+  </div>
+  <div class="px-8 pb-8 border-t border-outline-variant/50 pt-6">
+    <div class="flex justify-between mb-6">
+      <span class="font-sans text-label uppercase tracking-widest text-on-surface-variant">Total</span>
+      <span id="cart-total" class="font-bodoni text-headline-md text-primary">$0 MXN</span>
+    </div>
+    <button onclick="checkout()" class="w-full py-4 bg-primary text-on-primary font-sans text-label uppercase tracking-widest rounded hover:bg-tertiary transition-colors duration-300">
+      Proceder al pago
+    </button>
+    <button onclick="closeCart()" class="w-full py-3 mt-3 border border-primary text-primary font-sans text-label uppercase tracking-widest rounded hover:bg-surface-container-low transition-colors duration-300">
+      Seguir comprando
+    </button>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════ PRODUCT MODAL ═══════════════════════════ -->
+<div id="product-modal" class="fixed inset-0 bg-primary/40 z-50 flex items-center justify-center p-4">
+  <div class="modal-inner bg-surface-container-lowest w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-sm ambient-glow">
+    <div class="grid grid-cols-1 md:grid-cols-2">
+      <div class="relative aspect-[3/4] md:aspect-auto bg-surface-container-low overflow-hidden">
+        <img id="modal-img" src="" alt="" class="w-full h-full object-cover">
+      </div>
+      <div class="p-8 md:p-10 flex flex-col justify-between">
+        <div>
+          <button onclick="closeModal()" class="absolute top-4 right-4 text-on-surface-variant hover:text-primary transition-colors">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+          <p class="font-sans text-label uppercase tracking-widest text-on-surface-variant mb-2" id="modal-category">Bolsas</p>
+          <h2 id="modal-name" class="font-bodoni text-headline-lg text-primary mb-2"></h2>
+          <p id="modal-price" class="font-sans text-label uppercase tracking-widest text-secondary mb-6"></p>
+          <div class="thin-divider mb-6"></div>
+          <p id="modal-desc" class="font-sans text-body-md text-on-surface-variant leading-relaxed mb-8"></p>
+
+          <!-- Color swatches -->
+          <div class="mb-8">
+            <p class="font-sans text-label uppercase tracking-widest text-on-surface-variant mb-3">Piel</p>
+            <div class="flex gap-3">
+              <button class="swatch active w-7 h-7 rounded-full bg-[#5c3d1e] border border-outline-variant/50" data-color="Espresso" onclick="selectSwatch(this)"></button>
+              <button class="swatch w-7 h-7 rounded-full bg-[#c4a882] border border-outline-variant/50" data-color="Camel" onclick="selectSwatch(this)"></button>
+              <button class="swatch w-7 h-7 rounded-full bg-[#1a1a1a] border border-outline-variant/50" data-color="Noir" onclick="selectSwatch(this)"></button>
+            </div>
+            <p id="swatch-label" class="font-sans text-caption text-on-surface-variant mt-2">Espresso</p>
+          </div>
+
+          <!-- Artisan details -->
+          <details class="group mb-6 border-t border-outline-variant/50 pt-4">
+            <summary class="flex justify-between items-center cursor-pointer list-none">
+              <span class="font-sans text-label uppercase tracking-widest text-primary">Detalles del Artesano</span>
+              <span class="material-symbols-outlined text-on-surface-variant group-open:rotate-180 transition-transform">expand_more</span>
+            </summary>
+            <ul class="mt-4 space-y-2 font-sans text-body-md text-on-surface-variant">
+              <li class="flex items-start gap-2"><span class="material-symbols-outlined text-secondary text-sm mt-0.5" style="font-size:16px">verified</span>Cuero vacuno de curtido vegetal</li>
+              <li class="flex items-start gap-2"><span class="material-symbols-outlined text-secondary text-sm mt-0.5" style="font-size:16px">verified</span>Costuras de lino encerado a mano</li>
+              <li class="flex items-start gap-2"><span class="material-symbols-outlined text-secondary text-sm mt-0.5" style="font-size:16px">verified</span>Herrajes de latón macizo bañado en oro</li>
+              <li class="flex items-start gap-2"><span class="material-symbols-outlined text-secondary text-sm mt-0.5" style="font-size:16px">verified</span>Forro de algodón orgánico certificado</li>
+            </ul>
+          </details>
+
+          <!-- Auth badge -->
+          <div class="flex items-center gap-3 bg-surface-container-low rounded px-4 py-3">
+            <span class="material-symbols-outlined text-secondary" style="font-size:20px">workspace_premium</span>
+            <span class="font-sans text-caption text-on-surface-variant uppercase tracking-wider">Certificado de Autenticidad incluido</span>
+          </div>
+        </div>
+
+        <button id="modal-add-btn" onclick="addToCartFromModal()" class="mt-8 w-full py-4 bg-primary text-on-primary font-sans text-label uppercase tracking-widest rounded hover:bg-tertiary transition-colors duration-300">
+          Añadir al Carrito
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ MOBILE MENU ═══════════════════════════ -->
+<div id="mobile-menu" class="fixed inset-0 bg-surface z-40 flex flex-col px-margin-mobile py-8">
+  <div class="flex justify-between items-center mb-12">
+    <svg width="140" height="52" viewBox="0 0 400 150" xmlns="http://www.w3.org/2000/svg">
+      <text x="50%" y="65" text-anchor="middle" font-family="'Bodoni Moda', serif" font-size="68" letter-spacing="2" fill="#26170c">Mauvette</text>
+      <text x="50%" y="110" text-anchor="middle" font-family="'Montserrat', sans-serif" font-size="13" letter-spacing="12" fill="#775a19">BAGS</text>
+    </svg>
+    <button onclick="closeMobileMenu()" class="text-on-surface-variant">
+      <span class="material-symbols-outlined text-3xl">close</span>
+    </button>
+  </div>
+  <nav class="flex flex-col gap-8">
+    <a onclick="closeMobileMenu()" href="#coleccion" class="font-bodoni text-headline-md text-primary hover-gold relative inline-block w-fit">Colección</a>
+    <a onclick="closeMobileMenu()" href="#historia" class="font-bodoni text-headline-md text-primary hover-gold relative inline-block w-fit">Atelier</a>
+    <a onclick="closeMobileMenu()" href="#artesania" class="font-bodoni text-headline-md text-primary hover-gold relative inline-block w-fit">Artesanía</a>
+    <a onclick="closeMobileMenu()" href="#contacto" class="font-bodoni text-headline-md text-primary hover-gold relative inline-block w-fit">Contacto</a>
+  </nav>
+  <div class="mt-auto">
+    <div class="thin-divider mb-8"></div>
+    <p class="font-sans text-caption uppercase tracking-widest text-on-surface-variant">Ciudad de México · México</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ NAVIGATION ═══════════════════════════ -->
+<nav id="mainNav" class="fixed top-0 w-full z-30 transition-all duration-500 glass-nav">
+  <div class="flex justify-between items-center px-5 md:px-16 py-5 w-full max-w-[1280px] mx-auto">
+    <!-- Left links (desktop) -->
+    <div class="hidden md:flex gap-8">
+      <a href="#coleccion" class="font-sans text-label uppercase tracking-widest text-primary hover-gold relative">Colección</a>
+      <a href="#historia" class="font-sans text-label uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors relative hover-gold">Atelier</a>
+    </div>
+
+    <!-- Logo (center) -->
+    <a href="#" class="flex-shrink-0 mx-auto md:mx-0 md:absolute md:left-1/2 md:-translate-x-1/2">
+      <svg width="140" height="42" viewBox="0 0 400 150" xmlns="http://www.w3.org/2000/svg">
+        <text x="50%" y="65" text-anchor="middle" font-family="'Bodoni Moda', serif" font-size="68" letter-spacing="2" fill="#26170c">Mauvette</text>
+        <text x="50%" y="110" text-anchor="middle" font-family="'Montserrat', sans-serif" font-size="13" letter-spacing="12" fill="#775a19">BAGS</text>
+      </svg>
+    </a>
+
+    <!-- Right links (desktop) + cart -->
+    <div class="flex items-center gap-6">
+      <div class="hidden md:flex gap-8">
+        <a href="#artesania" class="font-sans text-label uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors relative hover-gold">Artesanía</a>
+        <a href="#contacto" class="font-sans text-label uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors relative hover-gold">Contacto</a>
+      </div>
+      <button onclick="openCart()" class="relative text-primary hover:text-secondary transition-colors" aria-label="Carrito">
+        <span class="material-symbols-outlined">shopping_bag</span>
+        <span id="cart-badge" class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-secondary text-on-secondary text-[9px] font-bold rounded-full flex items-center justify-center hidden">0</span>
+      </button>
+      <!-- Mobile menu toggle -->
+      <button onclick="openMobileMenu()" class="md:hidden text-primary">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+<header class="relative w-full h-[90vh] md:h-screen min-h-[600px] flex items-center justify-center overflow-hidden bg-surface-container">
+  <div class="absolute inset-0 z-0">
+    <div class="w-full h-full bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD6z3cuAa0gv_y41qHBGyJ8j8JY1SxGVZDzoh5dwbLP1mgO0Xcx4ArKRrrNIp4hWT4-0jPLtvVVtPE0EcRq5xP8VUAqkA5RCWsrglgZTDX5HrZEwNSiCO1ShJl7yA9VzAZQ5W-njlPZaHdLe5bKAAHeM9Wewc0ReAQRE2uc6eidHtBq9gYKD6W5EFx5FgBNzlUlkE32nCDAEfrLIObVWJ7u7NvZJb2POf1Vjy4KI5lSp-czcvuGnVlKbwHnVfZpGWFcbr_tZjil3J1X')"></div>
+    <div class="absolute inset-0 bg-primary/25"></div>
+  </div>
+  <div class="relative z-10 text-center px-6 max-w-3xl mx-auto flex flex-col items-center mt-20">
+    <p class="font-sans text-label uppercase tracking-[0.3em] text-surface-container-low/80 mb-4">Lujo Silencioso · Artesanal</p>
+    <h1 class="font-bodoni text-display-md md:text-display-lg text-surface-container-lowest mb-6 drop-shadow-md">Mauvette</h1>
+    <p class="font-sans font-light text-body-lg text-surface-container-lowest/90 mb-10 max-w-lg mx-auto tracking-wide drop-shadow-sm">Hecho para llevar tu historia.</p>
+    <a href="#coleccion" class="inline-flex items-center justify-center px-10 py-4 bg-primary text-on-primary font-sans text-label uppercase tracking-widest rounded hover:bg-tertiary transition-colors duration-300">
+      Explorar la colección
+    </a>
+  </div>
+  <!-- Scroll indicator -->
+  <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-surface-container-lowest/60">
+    <span class="font-sans text-caption uppercase tracking-widest">Scroll</span>
+    <div class="w-px h-10 bg-surface-container-lowest/40 animate-pulse"></div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════ COLLECTION ═══════════════════════════ -->
+<section class="py-[120px] px-5 md:px-16 max-w-[1280px] mx-auto" id="coleccion">
+  <div class="text-center mb-16 fade-up">
+    <p class="font-sans text-label uppercase tracking-[0.2em] text-secondary mb-3">Nueva Temporada</p>
+    <h2 class="font-bodoni text-headline-md md:text-headline-lg text-primary mb-4">La Colección</h2>
+    <div class="w-12 h-px bg-secondary mx-auto"></div>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
+
+    <!-- Aurora -->
+    <div class="product-card fade-up" onclick="openModal('Aurora','$1,890 MXN','https://lh3.googleusercontent.com/aida-public/AB6AXuDJPWki75l-X3PlPM5HoJ4GRFw3oRU_BJ6bht-VdKkydxZFA09_5TIEJwZVe7EwnWaBqLT6qVVlCCywM6NIZU0en8te4lH5jSgKkuuXddnKVvKIRTycq9mvjvaKkuaOgD9BNVDWn7EjI9-s6VqB7P6fb-HZ4ntGZiqEScuYggdq753kathj7BcSRyFnOPxClyi_PGppJ9QHn_i2tlOLmHIf-MHSQ5_5Obi22_98ViI9RAe7kvbTkIuyiIyUMvpDdt9OTXMIByv1vk1O','Bolsa tote estructurada en cuero de grano completo color espresso. Herrajes minimalistas en oro. El accesorio definitivo para el día a día con carácter.',1890)">
+      <div class="relative aspect-[3/4] mb-6 overflow-hidden bg-surface-container-low rounded-sm">
+        <img class="product-img w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJPWki75l-X3PlPM5HoJ4GRFw3oRU_BJ6bht-VdKkydxZFA09_5TIEJwZVe7EwnWaBqLT6qVVlCCywM6NIZU0en8te4lH5jSgKkuuXddnKVvKIRTycq9mvjvaKkuaOgD9BNVDWn7EjI9-s6VqB7P6fb-HZ4ntGZiqEScuYggdq753kathj7BcSRyFnOPxClyi_PGppJ9QHn_i2tlOLmHIf-MHSQ5_5Obi22_98ViI9RAe7kvbTkIuyiIyUMvpDdt9OTXMIByv1vk1O" alt="Bolsa Aurora">
+        <div class="absolute inset-0 flex items-end justify-center pb-5 opacity-0 hover:opacity-100 transition-opacity duration-300 bg-gradient-to-t from-primary/40 to-transparent">
+          <span class="font-sans text-label uppercase tracking-widest text-on-primary">Ver detalles</span>
+        </div>
+      </div>
+      <div class="text-center">
+        <h3 class="font-bodoni text-body-lg text-primary mb-1">Bolsa Aurora</h3>
+        <p class="font-sans text-label text-on-surface-variant">$1,890 MXN</p>
+      </div>
+    </div>
+
+    <!-- Nyx -->
+    <div class="product-card fade-up" style="transition-delay:100ms" onclick="openModal('Nyx','$1,690 MXN','https://lh3.googleusercontent.com/aida-public/AB6AXuD0Z6YAnMyugopEmzP2c3MQr9qY6PUnR3LfAQTiBZq0YwMPaqSuJog1sGKp0s8Wm-v2fZkx29pOgQxdxTsfMl02myRwkJaKO8PFbFCb5bjchInosZkEATJmaj_ScrOaSXW_nB-azssuJf_RG9dS5YQ6im1sKY-C-y3dxclnp48gB8hRZTyefLdmftpiJ5Hwm8QM-4EIssuZjy4RwAEGvrtugzVn2N3NxRZk-HwLR4wMAGNJDVONds9gFwDDnATV6q6IZ9CtgYnUM5ZN','Bolsa de hombro de inspiración minimalista en piel genuina color negro medianoche. Cadena de latón dorado intercambiable.',1690)">
+      <div class="relative aspect-[3/4] mb-6 overflow-hidden bg-surface-container-low rounded-sm">
+        <img class="product-img w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0Z6YAnMyugopEmzP2c3MQr9qY6PUnR3LfAQTiBZq0YwMPaqSuJog1sGKp0s8Wm-v2fZkx29pOgQxdxTsfMl02myRwkJaKO8PFbFCb5bjchInosZkEATJmaj_ScrOaSXW_nB-azssuJf_RG9dS5YQ6im1sKY-C-y3dxclnp48gB8hRZTyefLdmftpiJ5Hwm8QM-4EIssuZjy4RwAEGvrtugzVn2N3NxRZk-HwLR4wMAGNJDVONds9gFwDDnATV6q6IZ9CtgYnUM5ZN" alt="Bolsa Nyx">
+        <div class="absolute inset-0 flex items-end justify-center pb-5 opacity-0 hover:opacity-100 transition-opacity duration-300 bg-gradient-to-t from-primary/40 to-transparent">
+          <span class="font-sans text-label uppercase tracking-widest text-on-primary">Ver detalles</span>
+        </div>
+      </div>
+      <div class="text-center">
+        <h3 class="font-bodoni text-body-lg text-primary mb-1">Bolsa Nyx</h3>
+        <p class="font-sans text-label text-on-surface-variant">$1,690 MXN</p>
+      </div>
+    </div>
+
+    <!-- Selene -->
+    <div class="product-card fade-up" style="transition-delay:200ms" onclick="openModal('Selene','$2,090 MXN','https://lh3.googleusercontent.com/aida-public/AB6AXuCvOFJTmvahtXs1--couefVLXhS8p1_dexm2-3UrKajC2Bp8YPTjF3fPtpeweeCbUUnmi1z33uRWM_aGZ4tQoswv4QMb3cNqghOr6Q84IWpU-8Nom-lnJt9GfXtPOg-utPQkL1fIYstAIk9aQVt8TuhsX4GSBnHU0NHXNwJ_BHJI0to8fT0b3ycQTDyqKMUMQnYTfO2KjbwwBjFKyraI4DuJ6YoiWrxLqwPkQAsM6CKpGjp-90VQAhPSFl4BaDvw45ASclLEqc2agdF','Mini bolsa estructurada en piel crema con herrajes plateados. Diseño atemporal de formato cuadrado, perfecta para ocasiones especiales.',2090)">
+      <div class="relative aspect-[3/4] mb-6 overflow-hidden bg-surface-container-low rounded-sm">
+        <img class="product-img w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvOFJTmvahtXs1--couefVLXhS8p1_dexm2-3UrKajC2Bp8YPTjF3fPtpeweeCbUUnmi1z33uRWM_aGZ4tQoswv4QMb3cNqghOr6Q84IWpU-8Nom-lnJt9GfXtPOg-utPQkL1fIYstAIk9aQVt8TuhsX4GSBnHU0NHXNwJ_BHJI0to8fT0b3ycQTDyqKMUMQnYTfO2KjbwwBjFKyraI4DuJ6YoiWrxLqwPkQAsM6CKpGjp-90VQAhPSFl4BaDvw45ASclLEqc2agdF" alt="Bolsa Selene">
+        <div class="absolute inset-0 flex items-end justify-center pb-5 opacity-0 hover:opacity-100 transition-opacity duration-300 bg-gradient-to-t from-primary/40 to-transparent">
+          <span class="font-sans text-label uppercase tracking-widest text-on-primary">Ver detalles</span>
+        </div>
+      </div>
+      <div class="text-center">
+        <h3 class="font-bodoni text-body-lg text-primary mb-1">Bolsa Selene</h3>
+        <p class="font-sans text-label text-on-surface-variant">$2,090 MXN</p>
+      </div>
+    </div>
+
+    <!-- Vesta -->
+    <div class="product-card fade-up" style="transition-delay:300ms" onclick="openModal('Vesta','$1,490 MXN','https://lh3.googleusercontent.com/aida-public/AB6AXuCDuiXpipHa4_MtCzb0SyGey24IF7sXEAWbQbHkxLqjvC2TDFgrim1IdWFm-AJgrLZ3N6-uTJiLTKdsktvmQA6ZQr5ZU6qpIFitFyhaVeWcwCQBxqW4yTjPQSY9R-ZRT5FbbgMGCVVRZE-Z4kyVWMTEtJqbrbAbgZr0ll_nC6D-NZeB5V0OxEvGhPl9akVzSnPOlvAUGHZ7zhfNKQepQIhGa0f_2OEuaxLH7607Qcr52GOC_RVqJtwYWJn0JkghaqIFb7PRurmokP3O','Bolsa hobo en cuero marrón suave con anillas doradas. Formato amplio y flexible, icono del estilo relajado con personalidad.',1490)">
+      <div class="relative aspect-[3/4] mb-6 overflow-hidden bg-surface-container-low rounded-sm">
+        <img class="product-img w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDuiXpipHa4_MtCzb0SyGey24IF7sXEAWbQbHkxLqjvC2TDFgrim1IdWFm-AJgrLZ3N6-uTJiLTKdsktvmQA6ZQr5ZU6qpIFitFyhaVeWcwCQBxqW4yTjPQSY9R-ZRT5FbbgMGCVVRZE-Z4kyVWMTEtJqbrbAbgZr0ll_nC6D-NZeB5V0OxEvGhPl9akVzSnPOlvAUGHZ7zhfNKQepQIhGa0f_2OEuaxLH7607Qcr52GOC_RVqJtwYWJn0JkghaqIFb7PRurmokP3O" alt="Bolsa Vesta">
+        <div class="absolute inset-0 flex items-end justify-center pb-5 opacity-0 hover:opacity-100 transition-opacity duration-300 bg-gradient-to-t from-primary/40 to-transparent">
+          <span class="font-sans text-label uppercase tracking-widest text-on-primary">Ver detalles</span>
+        </div>
+      </div>
+      <div class="text-center">
+        <h3 class="font-bodoni text-body-lg text-primary mb-1">Bolsa Vesta</h3>
+        <p class="font-sans text-label text-on-surface-variant">$1,490 MXN</p>
+      </div>
+    </div>
+
+    <!-- Cressida -->
+    <div class="product-card fade-up" style="transition-delay:100ms" onclick="openModal('Cressida','$2,350 MXN','https://lh3.googleusercontent.com/aida-public/AB6AXuBdSHjss7B4kQ9A5xxLaOqozJeHKbnyDZNB0YqhtyFl7vUd2JJceBM1i4uI9vOSAk6KtyuFGjPUmFofB9AOA-KrwiSm_CupA4_hHH8R7u5wNkfQ9BW5JD5Z7xo2dqrZGhHNilZZrczIuDGm_aN5Im-OvgTkYyxC4wpYfJI1W6f83HL2_ytmVvMof2iCWyw767KjaSEoIbY_UqtU03CmUfGYUpygeHqnVTnnt110AzCEZii57LZD99KkXxlSJg2GvVTP1YUwu-MF9A14','Cartera-sobre de cuero espresso con acabado de canto pintado a mano. Complemento elegante para la tarde.',2350)">
+      <div class="relative aspect-[3/4] mb-6 overflow-hidden bg-surface-container-low rounded-sm">
+        <img class="product-img w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdSHjss7B4kQ9A5xxLaOqozJeHKbnyDZNB0YqhtyFl7vUd2JJceBM1i4uI9vOSAk6KtyuFGjPUmFofB9AOA-KrwiSm_CupA4_hHH8R7u5wNkfQ9BW5JD5Z7xo2dqrZGhHNilZZrczIuDGm_aN5Im-OvgTkYyxC4wpYfJI1W6f83HL2_ytmVvMof2iCWyw767KjaSEoIbY_UqtU03CmUfGYUpygeHqnVTnnt110AzCEZii57LZD99KkXxlSJg2GvVTP1YUwu-MF9A14" alt="Bolsa Cressida">
+        <div class="absolute inset-0 flex items-end justify-center pb-5 opacity-0 hover:opacity-100 transition-opacity duration-300 bg-gradient-to-t from-primary/40 to-transparent">
+          <span class="font-sans text-label uppercase tracking-widest text-on-primary">Ver detalles</span>
+        </div>
+      </div>
+      <div class="text-center">
+        <h3 class="font-bodoni text-body-lg text-primary mb-1">Bolsa Cressida</h3>
+        <p class="font-sans text-label text-on-surface-variant">$2,350 MXN</p>
+      </div>
+    </div>
+
+    <!-- Enid -->
+    <div class="product-card fade-up" style="transition-delay:200ms" onclick="openModal('Enid','$1,980 MXN','https://lh3.googleusercontent.com/aida-public/AB6AXuCULtNilcMiN1PrvsqJckxmMnZ0m-WxYD46aUIM_0N0NqKI0-o8rpS0NbHKHEY-7ERPY17y0mM3sqw0AnVcgb3RNxHQpj9OrU-T6Lj3WRokB4QJgZj7y04cO8Zp2gBJg9jI1qqVbrv34uKh-uS8VNLVwaN9CdfreQqjeiCYtizlYe79Hp4IXth9zO7fgPtfThpSKCHXN26YA7yZ1XwWiAnUDGd4rDlrc4GDjUxXz6k4D8SzdlVPhbmnEdX8IoCZClVdiNsDzl9yOFW8','Bolsa de mano de cuero natural con tratamiento de cera. Patina con el uso, forjando una pieza única y personal.',1980)">
+      <div class="relative aspect-[3/4] mb-6 overflow-hidden bg-surface-container-low rounded-sm">
+        <img class="product-img w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCULtNilcMiN1PrvsqJckxmMnZ0m-WxYD46aUIM_0N0NqKI0-o8rpS0NbHKHEY-7ERPY17y0mM3sqw0AnVcgb3RNxHQpj9OrU-T6Lj3WRokB4QJgZj7y04cO8Zp2gBJg9jI1qqVbrv34uKh-uS8VNLVwaN9CdfreQqjeiCYtizlYe79Hp4IXth9zO7fgPtfThpSKCHXN26YA7yZ1XwWiAnUDGd4rDlrc4GDjUxXz6k4D8SzdlVPhbmnEdX8IoCZClVdiNsDzl9yOFW8" alt="Bolsa Enid">
+        <div class="absolute inset-0 flex items-end justify-center pb-5 opacity-0 hover:opacity-100 transition-opacity duration-300 bg-gradient-to-t from-primary/40 to-transparent">
+          <span class="font-sans text-label uppercase tracking-widest text-on-primary">Ver detalles</span>
+        </div>
+      </div>
+      <div class="text-center">
+        <h3 class="font-bodoni text-body-lg text-primary mb-1">Bolsa Enid</h3>
+        <p class="font-sans text-label text-on-surface-variant">$1,980 MXN</p>
+      </div>
+    </div>
+
+    <!-- Mora -->
+    <div class="product-card fade-up" style="transition-delay:300ms" onclick="openModal('Mora','$1,750 MXN','https://lh3.googleusercontent.com/aida-public/AB6AXuCz1hGJT_h3x_sJYOL1_RGaIEkm3KVGQjXdGPrgNOyBb2lnkOJ1eCpO_EzKMb3R02GfVqdN48qOXvqVH_dFwKsWJe7mgSDCMJuaFU7uopUNFyRsq1B7Bm1fCh9EJCKh_-x79AcMKFGMuumLJXnj1P_NqZxq_i3O6HsKUkyVRkzPaePaJf6amJ3G_aeHtqxLlPABo4R3JDd0GHBsX5fcqKxA-JtVIkOiIYvjT5Hfu5_SBaOuR5Rh6l3oIRf3PVZpYr4N_Q_i5jQ','Bolsa crossbody compacta en cuero rosa polvo. Correa ajustable de cadena dorada. La pieza para la noche.',1750)">
+      <div class="relative aspect-[3/4] mb-6 overflow-hidden bg-surface-container-low rounded-sm bg-surface-container">
+        <div class="w-full h-full flex items-center justify-center">
+          <svg width="80" height="80" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="opacity-30">
+            <circle cx="100" cy="100" r="90" fill="none" stroke="#C5A059" stroke-width="1.5" opacity="0.5"/>
+            <text x="100" y="115" text-anchor="middle" font-family="'Bodoni Moda', serif" font-size="80" fill="#C5A059" letter-spacing="-5">M</text>
+          </svg>
+        </div>
+        <div class="absolute inset-0 flex items-end justify-center pb-5 opacity-0 hover:opacity-100 transition-opacity duration-300 bg-gradient-to-t from-primary/40 to-transparent">
+          <span class="font-sans text-label uppercase tracking-widest text-on-primary">Ver detalles</span>
+        </div>
+      </div>
+      <div class="text-center">
+        <h3 class="font-bodoni text-body-lg text-primary mb-1">Bolsa Mora</h3>
+        <p class="font-sans text-label text-on-surface-variant">$1,750 MXN</p>
+      </div>
+    </div>
+
+    <!-- Irene -->
+    <div class="product-card fade-up" style="transition-delay:400ms" onclick="openModal('Irene','$2,190 MXN','https://lh3.googleusercontent.com/aida-public/AB6AXuA4EIhEBXUAWe3OOE7B94RkjIMzz_1SBFjnNxW7GkJN0KCGo5RN0VHl1yBGBniqrKf-m01wQJyqHFJ-eFjSJN3kNkEKSfb7Aa0KYxoOhIfmVnR4IWxFiWDNHJVQmMxSWYCJdVGV1a4f6DH6H9P5WCBc18JmBFHLkfG1MvlASvIj-1jGI6AenEhv4KJsHzfT-JT0uFM7U2N_cpJg-1BKvB1nnQj-Vh9TxaHQB6G35AhEilEBuGKO9j0H2OA4dKSbWDq3uQ4QVgJeM','Tote de cuero curtido vegetal natural con monograma grabado a fuego. Personalizable bajo pedido.',2190)">
+      <div class="relative aspect-[3/4] mb-6 overflow-hidden bg-surface-container-low rounded-sm bg-surface-container">
+        <div class="w-full h-full flex items-center justify-center">
+          <svg width="80" height="80" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="opacity-30">
+            <circle cx="100" cy="100" r="90" fill="none" stroke="#C5A059" stroke-width="1.5" opacity="0.5"/>
+            <text x="100" y="115" text-anchor="middle" font-family="'Bodoni Moda', serif" font-size="80" fill="#C5A059" letter-spacing="-5">M</text>
+          </svg>
+        </div>
+        <div class="absolute inset-0 flex items-end justify-center pb-5 opacity-0 hover:opacity-100 transition-opacity duration-300 bg-gradient-to-t from-primary/40 to-transparent">
+          <span class="font-sans text-label uppercase tracking-widest text-on-primary">Ver detalles</span>
+        </div>
+      </div>
+      <div class="text-center">
+        <h3 class="font-bodoni text-body-lg text-primary mb-1">Bolsa Irene</h3>
+        <p class="font-sans text-label text-on-surface-variant">$2,190 MXN</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="w-full max-w-[1280px] mx-auto px-16 hidden md:block"><div class="thin-divider"></div></div>
+
+<!-- ═══════════════════════════ STORY ═══════════════════════════ -->
+<section class="py-[120px] px-5 md:px-16 max-w-[1280px] mx-auto" id="historia">
+  <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+    <div class="md:col-span-5 md:col-start-2 fade-up">
+      <div class="relative aspect-[4/5] bg-surface-container-low overflow-hidden rounded-sm">
+        <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCULtNilcMiN1PrvsqJckxmMnZ0m-WxYD46aUIM_0N0NqKI0-o8rpS0NbHKHEY-7ERPY17y0mM3sqw0AnVcgb3RNxHQpj9OrU-T6Lj3WRokB4QJgZj7y04cO8Zp2gBJg9jI1qqVbrv34uKh-uS8VNLVwaN9CdfreQqjeiCYtizlYe79Hp4IXth9zO7fgPtfThpSKCHXN26YA7yZ1XwWiAnUDGd4rDlrc4GDjUxXz6k4D8SzdlVPhbmnEdX8IoCZClVdiNsDzl9yOFW8" alt="Artesano trabajando el cuero">
+      </div>
+    </div>
+    <div class="md:col-span-4 md:col-start-8 flex flex-col justify-center mt-12 md:mt-0 fade-up" style="transition-delay:200ms">
+      <h2 class="font-bodoni text-headline-md md:text-headline-lg text-primary mb-8">Nuestra historia</h2>
+      <div class="w-12 h-px bg-secondary mb-8"></div>
+      <p class="font-sans text-body-md text-on-surface-variant mb-6 leading-relaxed">
+        Mauvette nace de la idea de que una bolsa es más que un accesorio; es un testigo silencioso de tus días, un refugio para tus esenciales y una extensión de tu identidad.
+      </p>
+      <p class="font-sans text-body-md text-on-surface-variant leading-relaxed">
+        Fundado en la Ciudad de México, cada diseño se concibe con la intención de envejecer con gracia, patinando con el tiempo y contando la historia única de su dueña.
+      </p>
+      <div class="mt-10 flex items-center gap-4">
+        <div class="w-12 h-px bg-secondary"></div>
+        <span class="font-sans text-label uppercase tracking-widest text-secondary">Est. 2020 · CDMX</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ CRAFTSMANSHIP ═══════════════════════════ -->
+<section class="bg-surface-container-low py-24 px-5 md:px-16" id="artesania">
+  <div class="max-w-[1280px] mx-auto">
+    <div class="text-center mb-16 fade-up">
+      <p class="font-sans text-label uppercase tracking-[0.2em] text-secondary mb-3">Proceso</p>
+      <h2 class="font-bodoni text-headline-md text-primary">El detalle lo es todo</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="text-center fade-up">
+        <div class="aspect-square mb-6 overflow-hidden rounded-sm">
+          <img class="product-img w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdSHjss7B4kQ9A5xxLaOqozJeHKbnyDZNB0YqhtyFl7vUd2JJceBM1i4uI9vOSAk6KtyuFGjPUmFofB9AOA-KrwiSm_CupA4_hHH8R7u5wNkfQ9BW5JD5Z7xo2dqrZGhHNilZZrczIuDGm_aN5Im-OvgTkYyxC4wpYfJI1W6f83HL2_ytmVvMof2iCWyw767KjaSEoIbY_UqtU03CmUfGYUpygeHqnVTnnt110AzCEZii57LZD99KkXxlSJg2GvVTP1YUwu-MF9A14" alt="Pieles Selectas">
+        </div>
+        <h4 class="font-sans text-label uppercase tracking-widest text-primary mb-2">Pieles Selectas</h4>
+        <p class="font-sans text-body-md text-on-surface-variant text-sm">Curtidas de forma natural para un envejecimiento noble.</p>
+      </div>
+      <div class="text-center fade-up" style="transition-delay:150ms">
+        <div class="aspect-square mb-6 overflow-hidden rounded-sm">
+          <img class="product-img w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCULtNilcMiN1PrvsqJckxmMnZ0m-WxYD46aUIM_0N0NqKI0-o8rpS0NbHKHEY-7ERPY17y0mM3sqw0AnVcgb3RNxHQpj9OrU-T6Lj3WRokB4QJgZj7y04cO8Zp2gBJg9jI1qqVbrv34uKh-uS8VNLVwaN9CdfreQqjeiCYtizlYe79Hp4IXth9zO7fgPtfThpSKCHXN26YA7yZ1XwWiAnUDGd4rDlrc4GDjUxXz6k4D8SzdlVPhbmnEdX8IoCZClVdiNsDzl9yOFW8" alt="Costura a Mano">
+        </div>
+        <h4 class="font-sans text-label uppercase tracking-widest text-primary mb-2">Costura a Mano</h4>
+        <p class="font-sans text-body-md text-on-surface-variant text-sm">Cada punto, tejido con hilo de lino encerado por nuestros artesanos.</p>
+      </div>
+      <div class="text-center fade-up" style="transition-delay:300ms">
+        <div class="aspect-square mb-6 overflow-hidden rounded-sm">
+          <img class="product-img w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJPWki75l-X3PlPM5HoJ4GRFw3oRU_BJ6bht-VdKkydxZFA09_5TIEJwZVe7EwnWaBqLT6qVVlCCywM6NIZU0en8te4lH5jSgKkuuXddnKVvKIRTycq9mvjvaKkuaOgD9BNVDWn7EjI9-s6VqB7P6fb-HZ4ntGZiqEScuYggdq753kathj7BcSRyFnOPxClyi_PGppJ9QHn_i2tlOLmHIf-MHSQ5_5Obi22_98ViI9RAe7kvbTkIuyiIyUMvpDdt9OTXMIByv1vk1O" alt="Herrajes de Latón">
+        </div>
+        <h4 class="font-sans text-label uppercase tracking-widest text-primary mb-2">Herrajes de Latón</h4>
+        <p class="font-sans text-body-md text-on-surface-variant text-sm">Bañados en oro de 18k. Resistentes y atemporales.</p>
+      </div>
+    </div>
+
+    <!-- Stats bar -->
+    <div class="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 text-center fade-up">
+      <div>
+        <p class="font-bodoni text-display-md text-primary">8+</p>
+        <p class="font-sans text-caption uppercase tracking-widest text-on-surface-variant mt-1">Años de oficio</p>
+      </div>
+      <div>
+        <p class="font-bodoni text-display-md text-primary">100%</p>
+        <p class="font-sans text-caption uppercase tracking-widest text-on-surface-variant mt-1">Cuero genuino</p>
+      </div>
+      <div>
+        <p class="font-bodoni text-display-md text-primary">40h</p>
+        <p class="font-sans text-caption uppercase tracking-widest text-on-surface-variant mt-1">Por pieza</p>
+      </div>
+      <div>
+        <p class="font-bodoni text-display-md text-primary">∞</p>
+        <p class="font-sans text-caption uppercase tracking-widest text-on-surface-variant mt-1">Garantía vitalicia</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ EDITORIAL FEATURE ═══════════════════════════ -->
+<section class="relative w-full h-[60vh] min-h-[420px] overflow-hidden flex items-center justify-center">
+  <div class="absolute inset-0">
+    <div class="w-full h-full bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD6z3cuAa0gv_y41qHBGyJ8j8JY1SxGVZDzoh5dwbLP1mgO0Xcx4ArKRrrNIp4hWT4-0jPLtvVVtPE0EcRq5xP8VUAqkA5RCWsrglgZTDX5HrZEwNSiCO1ShJl7yA9VzAZQ5W-njlPZaHdLe5bKAAHeM9Wewc0ReAQRE2uc6eidHtBq9gYKD6W5EFx5FgBNzlUlkE32nCDAEfrLIObVWJ7u7NvZJb2POf1Vjy4KI5lSp-czcvuGnVlKbwHnVfZpGWFcbr_tZjil3J1X')"></div>
+    <div class="absolute inset-0 bg-primary/50"></div>
+  </div>
+  <div class="relative z-10 text-center px-6 max-w-2xl mx-auto fade-up">
+    <p class="font-sans text-label uppercase tracking-[0.3em] text-surface-container-low/70 mb-4">Filosofía</p>
+    <blockquote class="font-bodoni italic text-display-md md:text-headline-lg text-surface-container-lowest leading-tight mb-8">
+      "Una bolsa Mauvette no se compra. Se adopta."
+    </blockquote>
+    <a href="#coleccion" class="inline-flex items-center gap-2 font-sans text-label uppercase tracking-widest text-surface-container-lowest border-b border-surface-container-lowest/60 pb-1 hover:border-secondary-container transition-colors">
+      Descubrir la colección
+      <span class="material-symbols-outlined text-sm" style="font-size:14px">arrow_forward</span>
+    </a>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ NEWSLETTER ═══════════════════════════ -->
+<section class="py-[120px] px-5 md:px-16 max-w-3xl mx-auto text-center fade-up" id="contacto">
+  <div class="mb-10">
+    <svg width="48" height="48" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="mx-auto mb-6">
+      <circle cx="100" cy="100" r="90" fill="none" stroke="#C5A059" stroke-width="1.5" opacity="0.5"/>
+      <text x="100" y="115" text-anchor="middle" font-family="'Bodoni Moda', serif" font-size="80" fill="#C5A059" letter-spacing="-5">M</text>
+    </svg>
+    <h2 class="font-bodoni text-headline-md md:text-headline-lg text-primary mb-4">El Círculo Mauvette</h2>
+    <div class="w-12 h-px bg-secondary mx-auto mb-6"></div>
+    <p class="font-sans text-body-md text-on-surface-variant max-w-md mx-auto">
+      Acceso anticipado a nuevas piezas, invitaciones a eventos privados y cuidados exclusivos para tu bolsa.
+    </p>
+  </div>
+  <form onsubmit="handleNewsletter(event)" class="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
+    <div class="flex-1 relative">
+      <label class="absolute -top-5 left-0 font-sans text-caption uppercase tracking-widest text-on-surface-variant">Correo electrónico</label>
+      <input id="newsletter-email" type="email" placeholder="tu@correo.com" required
+        class="w-full border-0 border-b border-outline-variant bg-transparent py-3 font-sans text-body-md text-on-surface placeholder-on-surface-variant/50 focus:border-primary transition-colors">
+    </div>
+    <button type="submit" class="px-8 py-3 bg-primary text-on-primary font-sans text-label uppercase tracking-widest rounded hover:bg-tertiary transition-colors duration-300 whitespace-nowrap">
+      Unirme
+    </button>
+  </form>
+  <p class="font-sans text-caption text-on-surface-variant mt-4 opacity-60">Sin spam. Puedes darte de baja en cualquier momento.</p>
+</section>
+
+<!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
+<footer class="bg-surface-container w-full pt-[120px] pb-12 border-t border-outline-variant/40">
+  <div class="max-w-[1280px] mx-auto px-5 md:px-16">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-20">
+      <!-- Brand -->
+      <div class="md:col-span-4">
+        <svg width="160" height="52" viewBox="0 0 400 150" xmlns="http://www.w3.org/2000/svg" class="mb-6">
+          <text x="0" y="70" font-family="'Bodoni Moda', serif" font-size="68" letter-spacing="2" fill="#26170c">Mauvette</text>
+          <text x="4" y="112" font-family="'Montserrat', sans-serif" font-size="13" letter-spacing="12" fill="#775a19">BAGS</text>
+        </svg>
+        <p class="font-sans text-body-md text-on-surface-variant leading-relaxed mb-6 max-w-xs">
+          Artesanía de cuero con alma mexicana. Cada pieza, una promesa de durabilidad y elegancia silenciosa.
+        </p>
+        <div class="flex gap-4">
+          <a href="#" aria-label="Instagram" class="w-9 h-9 border border-outline-variant rounded-full flex items-center justify-center text-on-surface-variant hover:border-primary hover:text-primary transition-colors">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+          <a href="#" aria-label="Pinterest" class="w-9 h-9 border border-outline-variant rounded-full flex items-center justify-center text-on-surface-variant hover:border-primary hover:text-primary transition-colors">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+          </a>
+          <a href="#" aria-label="TikTok" class="w-9 h-9 border border-outline-variant rounded-full flex items-center justify-center text-on-surface-variant hover:border-primary hover:text-primary transition-colors">
+            <svg width="14" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.17 8.17 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div class="md:col-span-2 md:col-start-6">
+        <h5 class="font-sans text-label uppercase tracking-widest text-primary mb-6">Tienda</h5>
+        <ul class="space-y-3">
+          <li><a href="#coleccion" class="font-sans text-body-md text-on-surface-variant hover:text-primary transition-colors hover-gold relative inline-block">Colección</a></li>
+          <li><a href="#" class="font-sans text-body-md text-on-surface-variant hover:text-primary transition-colors hover-gold relative inline-block">Bolsas de mano</a></li>
+          <li><a href="#" class="font-sans text-body-md text-on-surface-variant hover:text-primary transition-colors hover-gold relative inline-block">Totes & Shoppers</a></li>
+          <li><a href="#" class="font-sans text-body-md text-on-surface-variant hover:text-primary transition-colors hover-gold relative inline-block">Mini bolsas</a></li>
+          <li><a href="#" class="font-sans text-body-md text-on-surface-variant hover:text-primary transition-colors hover-gold relative inline-block">Accesorios</a></li>
+        </ul>
+      </div>
+
+      <!-- Info -->
+      <div class="md:col-span-2">
+        <h5 class="font-sans text-label uppercase tracking-widest text-primary mb-6">Atelier</h5>
+        <ul class="space-y-3">
+          <li><a href="#historia" class="font-sans text-body-md text-on-surface-variant hover:text-primary transition-colors hover-gold relative inline-block">Nuestra historia</a></li>
+          <li><a href="#artesania" class="font-sans text-body-md text-on-surface-variant hover:text-primary transition-colors hover-gold relative inline-block">Artesanía</a></li>
+          <li><a href="#" class="font-sans text-body-md text-on-surface-variant hover:text-primary transition-colors hover-gold relative inline-block">Sostenibilidad</a></li>
+          <li><a href="#" class="font-sans text-body-md text-on-surface-variant hover:text-primary transition-colors hover-gold relative inline-block">Prensa</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div class="md:col-span-2">
+        <h5 class="font-sans text-label uppercase tracking-widest text-primary mb-6">Contacto</h5>
+        <ul class="space-y-3 font-sans text-body-md text-on-surface-variant">
+          <li class="flex items-start gap-2">
+            <span class="material-symbols-outlined text-secondary mt-0.5" style="font-size:16px">location_on</span>
+            <span>Colonia Roma Norte<br>Ciudad de México</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-secondary" style="font-size:16px">mail</span>
+            <a href="mailto:hola@mauvette.mx" class="hover:text-primary transition-colors">hola@mauvette.mx</a>
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-secondary" style="font-size:16px">schedule</span>
+            <span>Lun–Sáb · 10–19h</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="thin-divider mb-8"></div>
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+      <p class="font-sans text-caption text-on-surface-variant">© 2024 Mauvette. Todos los derechos reservados.</p>
+      <div class="flex gap-6">
+        <a href="#" class="font-sans text-caption text-on-surface-variant hover:text-primary transition-colors">Aviso de privacidad</a>
+        <a href="#" class="font-sans text-caption text-on-surface-variant hover:text-primary transition-colors">Términos y condiciones</a>
+        <a href="#" class="font-sans text-caption text-on-surface-variant hover:text-primary transition-colors">Envíos y devoluciones</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════ TOAST ═══════════════════════════ -->
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-primary text-on-primary px-6 py-3 rounded flex items-center gap-3 shadow-lg">
+  <span class="material-symbols-outlined text-secondary-container" style="font-size:18px">check_circle</span>
+  <span id="toast-msg" class="font-sans text-body-md"></span>
+</div>
+
+<!-- ═══════════════════════════ SCRIPTS ═══════════════════════════ -->
+<script>
+  // ── Nav scroll effect ──
+  const nav = document.getElementById('mainNav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled-nav', window.scrollY > 60);
+    nav.classList.toggle('glass-nav', window.scrollY <= 60);
+  });
+
+  // ── Fade-up observer ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // ── Cart state ──
+  let cart = [];
+
+  function openCart() {
+    document.getElementById('cart-drawer').classList.add('open');
+    document.getElementById('cart-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeCart() {
+    document.getElementById('cart-drawer').classList.remove('open');
+    document.getElementById('cart-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function renderCart() {
+    const items = document.getElementById('cart-items');
+    const empty = document.getElementById('cart-empty');
+    const total = document.getElementById('cart-total');
+    const badge = document.getElementById('cart-badge');
+
+    const existing = items.querySelectorAll('.cart-item');
+    existing.forEach(el => el.remove());
+
+    if (cart.length === 0) {
+      empty.style.display = '';
+      total.textContent = '$0 MXN';
+      badge.classList.add('hidden');
+      return;
+    }
+    empty.style.display = 'none';
+
+    let sum = 0;
+    cart.forEach((item, i) => {
+      sum += item.price * item.qty;
+      const div = document.createElement('div');
+      div.className = 'cart-item flex gap-4';
+      div.innerHTML = `
+        <div class="w-16 h-20 flex-shrink-0 bg-surface-container-low rounded-sm overflow-hidden">
+          ${item.img ? `<img src="${item.img}" alt="${item.name}" class="w-full h-full object-cover">` : '<div class="w-full h-full"></div>'}
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="font-bodoni text-body-md text-primary">${item.name}</p>
+          <p class="font-sans text-caption text-on-surface-variant uppercase tracking-wider">${item.color}</p>
+          <p class="font-sans text-label text-secondary mt-1">$${item.price.toLocaleString()} MXN</p>
+          <div class="flex items-center gap-3 mt-2">
+            <button onclick="updateQty(${i}, -1)" class="w-6 h-6 border border-outline-variant rounded flex items-center justify-center text-on-surface-variant hover:border-primary text-sm">−</button>
+            <span class="font-sans text-body-md text-on-surface w-4 text-center">${item.qty}</span>
+            <button onclick="updateQty(${i}, 1)" class="w-6 h-6 border border-outline-variant rounded flex items-center justify-center text-on-surface-variant hover:border-primary text-sm">+</button>
+          </div>
+        </div>
+        <button onclick="removeItem(${i})" class="text-on-surface-variant hover:text-error transition-colors self-start">
+          <span class="material-symbols-outlined" style="font-size:18px">close</span>
+        </button>
+      `;
+      items.appendChild(div);
+    });
+
+    total.textContent = `$${sum.toLocaleString()} MXN`;
+    const qty = cart.reduce((a, b) => a + b.qty, 0);
+    badge.textContent = qty;
+    badge.classList.remove('hidden');
+  }
+
+  function updateQty(i, delta) {
+    cart[i].qty = Math.max(1, cart[i].qty + delta);
+    renderCart();
+  }
+  function removeItem(i) {
+    cart.splice(i, 1);
+    renderCart();
+  }
+
+  function addToCart(name, price, img, color) {
+    const existing = cart.find(i => i.name === name && i.color === color);
+    if (existing) existing.qty++;
+    else cart.push({ name, price, img, color, qty: 1 });
+    renderCart();
+    showToast(`"${name}" añadida al carrito`);
+    openCart();
+  }
+
+  function checkout() {
+    if (cart.length === 0) return;
+    showToast('¡Gracias! Redirigiendo al pago...');
+    setTimeout(() => { cart = []; renderCart(); closeCart(); }, 2000);
+  }
+
+  // ── Product modal ──
+  let currentProduct = null;
+  function openModal(name, price, img, desc, priceNum) {
+    currentProduct = { name, price, img, desc, priceNum };
+    document.getElementById('modal-name').textContent = `Bolsa ${name}`;
+    document.getElementById('modal-price').textContent = price;
+    document.getElementById('modal-img').src = img;
+    document.getElementById('modal-img').alt = `Bolsa ${name}`;
+    document.getElementById('modal-desc').textContent = desc || '';
+    document.getElementById('product-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    // Reset swatch
+    document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+    document.querySelector('.swatch').classList.add('active');
+    document.getElementById('swatch-label').textContent = 'Espresso';
+  }
+  function closeModal() {
+    document.getElementById('product-modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('product-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  function selectSwatch(btn) {
+    document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('swatch-label').textContent = btn.dataset.color;
+  }
+
+  function addToCartFromModal() {
+    if (!currentProduct) return;
+    const color = document.getElementById('swatch-label').textContent;
+    addToCart(`Bolsa ${currentProduct.name}`, currentProduct.priceNum, currentProduct.img, color);
+    closeModal();
+  }
+
+  // ── Mobile menu ──
+  function openMobileMenu() {
+    document.getElementById('mobile-menu').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeMobileMenu() {
+    document.getElementById('mobile-menu').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // ── Toast ──
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    document.getElementById('toast-msg').textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  // ── Newsletter ──
+  function handleNewsletter(e) {
+    e.preventDefault();
+    const email = document.getElementById('newsletter-email').value;
+    showToast(`¡Bienvenida al Círculo Mauvette, ${email.split('@')[0]}!`);
+    e.target.reset();
+  }
+</script>
+</body>
+</html>
